@@ -7,7 +7,6 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import {
-  Button,
   Link,
   Navbar,
   NavbarBrand,
@@ -19,7 +18,7 @@ export default function Header() {
   return (
     <Navbar isBordered isBlurred>
       <NavbarBrand>
-        <p className="font-bold text-inherit">CLOUDNEXT</p>
+        <p className="font-bold text-purple-500 text-inherit">CLOUDNEXT</p>
       </NavbarBrand>
       <NavbarContent className="hidden gap-4 sm:flex" justify="center">
         <NavbarItem>

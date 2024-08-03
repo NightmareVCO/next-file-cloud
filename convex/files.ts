@@ -29,7 +29,7 @@ export const hasAccessToOrg = async ({
 };
 
 export const createFile = mutation({
-  args: { name: v.string(), orgId: v.string() },
+  args: { name: v.string(), orgId: v.string(), fileId: v.id("_storage") },
   async handler(context, arguments_) {
     const identity = await context.auth.getUserIdentity();
     if (!identity)
@@ -45,8 +45,17 @@ export const createFile = mutation({
     await context.db.insert("files", {
       name: arguments_.name,
       orgId: arguments_.orgId,
+      fileId: arguments_.fileId,
     });
   },
+});
+
+export const generateUploadUrl = mutation(async (context) => {
+  const identity = await context.auth.getUserIdentity();
+  if (!identity)
+    throw new ConvexError("You must be signed in to upload a file");
+
+  return await context.storage.generateUploadUrl();
 });
 
 export const getFiles = query({

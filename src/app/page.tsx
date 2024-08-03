@@ -1,10 +1,9 @@
 "use client";
 
 import { useOrganization, useUser } from "@clerk/nextjs";
-import { Button } from "@nextui-org/react";
+import FileUploadModal from "@components/fileUploadModal/FileUploadModal";
+import { api } from "@convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
-
-import { api } from "../../convex/_generated/api";
 
 export function useHome() {
   const organization = useOrganization();
@@ -25,21 +24,13 @@ export default function Home() {
   const { orgId, createFile, files } = useHome();
 
   return (
-    <section className="container min-h-screen">
+    <section className="container min-h-screen pt-12 mx-auto">
+      <div className="flex items-center justify-between">
+        <h1 className="text-4xl font-bold">Your Files</h1>
+        <FileUploadModal onSubmitFunction={createFile} orgId={orgId!} />
+      </div>
+
       {files?.map((file) => <div key={file._id}>{file.name}</div>)}
-
-      <Button
-        onPress={() => {
-          if (!orgId) return;
-
-          createFile({
-            name: "My File",
-            orgId: orgId,
-          });
-        }}
-      >
-        Click Me
-      </Button>
     </section>
   );
 }
