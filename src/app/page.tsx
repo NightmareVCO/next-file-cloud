@@ -5,6 +5,8 @@ import FileUploadModal from "@components/fileUploadModal/FileUploadModal";
 import { api } from "@convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 
+import FileCard from "@/ui/components/fileCard/FileCard";
+
 export function useHome() {
   const organization = useOrganization();
   const user = useUser();
@@ -30,7 +32,9 @@ export default function Home() {
         <FileUploadModal onSubmitFunction={createFile} orgId={orgId!} />
       </div>
 
-      {files?.map((file) => <div key={file._id}>{file.name}</div>)}
+      <section className="grid grid-cols-4 mt-8 gap-x-10">
+        {files?.map((file) => <FileCard key={file._id} file={file} />)}
+      </section>
     </section>
   );
 }
