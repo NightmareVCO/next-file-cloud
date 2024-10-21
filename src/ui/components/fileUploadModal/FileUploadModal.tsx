@@ -19,10 +19,12 @@ export type FileUploadProperties = {
     name,
     orgId,
     fileId,
+    type,
   }: {
     name: string;
     orgId: string;
     fileId: Id<"_storage">;
+    type: "image" | "csv" | "pdf";
   }) => void;
 };
 
@@ -34,7 +36,12 @@ export default function FileUploadModal(properties: FileUploadProperties) {
   return (
     <>
       <Toaster position="bottom-right" expand={true} closeButton richColors />
-      <Button variant="flat" color="secondary" onPress={onOpen}>
+      <Button
+        variant="flat"
+        color="secondary"
+        className="shadow-lg shadow-secondary/50"
+        onPress={onOpen}
+      >
         Upload File
       </Button>
       <Modal size="2xl" isOpen={isOpen} onClose={onClose}>
@@ -57,9 +64,11 @@ export default function FileUploadModal(properties: FileUploadProperties) {
                   Close
                 </Button>
                 <Button
+                  className="shadow-lg shadow-secondary/50"
                   color="secondary"
                   type="submit"
                   form="uploadForm"
+                  variant="flat"
                   isDisabled={submitButtonDisable}
                   isLoading={submitButtonDisable}
                 >

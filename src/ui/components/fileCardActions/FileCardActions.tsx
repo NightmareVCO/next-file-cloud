@@ -1,3 +1,4 @@
+import { Doc } from "@convex/_generated/dataModel";
 import { ActionsDotsIcon } from "@icons/ActionsDotsIcon";
 import { DeleteDocumentIcon } from "@icons/DeleteDocumentIcon";
 import {
@@ -13,7 +14,6 @@ import {
 import React from "react";
 
 import FileDeleteModal from "../fileDeleteModal/FileDeleteModal";
-import { Doc } from "@convex/_generated/dataModel";
 
 export default function FileCardActions({ file }: { file: Doc<"files"> }) {
   const iconClasses =
@@ -26,7 +26,7 @@ export default function FileCardActions({ file }: { file: Doc<"files"> }) {
         <DropdownTrigger>
           <Button
             variant="light"
-            color="secondary"
+            color="primary"
             isIconOnly
             aria-label="actions"
           >

@@ -6,6 +6,7 @@ import {
   query,
   QueryCtx as QueryContext,
 } from "./_generated/server";
+import { fileType } from "./schema";
 import { getUser } from "./users";
 
 export const hasAccessToOrg = async ({
@@ -29,7 +30,12 @@ export const hasAccessToOrg = async ({
 };
 
 export const createFile = mutation({
-  args: { name: v.string(), orgId: v.string(), fileId: v.id("_storage") },
+  args: {
+    name: v.string(),
+    orgId: v.string(),
+    fileId: v.id("_storage"),
+    type: fileType,
+  },
   async handler(context, arguments_) {
     const identity = await context.auth.getUserIdentity();
     if (!identity)
@@ -46,6 +52,7 @@ export const createFile = mutation({
       name: arguments_.name,
       orgId: arguments_.orgId,
       fileId: arguments_.fileId,
+      type: arguments_.type,
     });
   },
 });
@@ -71,10 +78,17 @@ export const getFiles = query({
     });
     if (!hasAccess) return [];
 
-    return await context.db
+    const files = await context.db
       .query("files")
       .withIndex("by_orgId", (q) => q.eq("orgId", arguments_.orgId))
       .collect();
+
+    return Promise.all(
+      files.map(async (file) => ({
+        ...file,
+        url: await context.storage.getUrl(file.fileId),
+      })),
+    );
   },
 });
 

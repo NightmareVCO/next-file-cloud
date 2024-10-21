@@ -1,4 +1,5 @@
 import { api } from "@convex/_generated/api";
+import { Doc } from "@convex/_generated/dataModel";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input as NextInput, Spacer } from "@nextui-org/react";
 import { useMutation } from "convex/react";
@@ -25,6 +26,15 @@ export type FileUploadFormProperties = {
   setSubmitButtonDisable: (status: boolean) => void;
 };
 
+const types = {
+  "image/png": "image",
+  "image/jpeg": "image",
+  "image/jpg": "image",
+  "image/webp": "image",
+  "application/pdf": "pdf",
+  "text/csv": "csv",
+} as Record<string, Doc<"files">["type"]>;
+
 export function useFileUploadForm({
   properties,
   onClose,
@@ -47,10 +57,12 @@ export function useFileUploadForm({
     setSubmitButtonDisable(true);
 
     const { title, file } = values;
+    const { type: fileType } = file[0];
+
     const postUrl = await generateUploadUrl();
     const result = await fetch(postUrl, {
       method: "POST",
-      headers: { "Content-Type": file[0].type },
+      headers: { "Content-Type": fileType },
       body: file[0],
     });
     const { storageId } = await result.json();
@@ -60,6 +72,7 @@ export function useFileUploadForm({
         name: title,
         orgId,
         fileId: storageId,
+        type: types[fileType],
       });
 
       toast.success("File uploaded successfully", {
@@ -69,9 +82,12 @@ export function useFileUploadForm({
       onClose();
     } catch (error) {
       if (error instanceof Error) {
-        toast.error("File type not supported", {
-          description: new Date().toLocaleString(),
-        });
+        toast.error(
+          "File type not supported. Only images, documents and csv.",
+          {
+            description: new Date().toLocaleString(),
+          },
+        );
       }
     } finally {
       setSubmitButtonDisable(false);
@@ -102,6 +118,7 @@ export default function FileUploadForm({
           id="title"
           type="text"
           label="Title"
+          variant="bordered"
           placeholder="Enter the title of your file"
           isRequired
           isClearable
