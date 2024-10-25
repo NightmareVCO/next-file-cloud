@@ -122,10 +122,42 @@ export const getFiles = query({
   },
 });
 
+export const getAllFavorites = query({
+  args: { orgId: v.string() },
+  async handler(context, arguments_) {
+    const identity = await context.auth.getUserIdentity();
+    if (!identity) return [];
+
+    const user = await getUser({
+      context,
+      tokenIdentifier: identity.tokenIdentifier,
+    });
+
+    const access = await hasAccessToOrg({
+      context,
+      orgId: arguments_.orgId,
+      tokenIdentifier: identity.tokenIdentifier,
+    });
+    if (!access) return [];
+
+    const favorites = await context.db
+      .query("favorites")
+      .withIndex("by_userId__orgId_fileId", (q) =>
+        q.eq("userId", user._id).eq("orgId", arguments_.orgId),
+      )
+      .collect();
+
+    return favorites;
+  },
+});
+
 export const deleteFile = mutation({
   args: { fileId: v.id("files") },
   async handler(context, arguments_) {
-    const access = await hasAccessToFile(context, arguments_.fileId);
+    const access = await hasAccessToFile({
+      context,
+      fileId: arguments_.fileId,
+    });
     if (!access) throw new ConvexError("You do not have access to this file");
 
     await context.db.delete(arguments_.fileId);
@@ -135,9 +167,11 @@ export const deleteFile = mutation({
 export const toggleFavorite = mutation({
   args: { fileId: v.id("files") },
   async handler(context, arguments_) {
-    const access = await hasAccessToFile(context, arguments_.fileId);
+    const access = await hasAccessToFile({
+      context,
+      fileId: arguments_.fileId,
+    });
     if (!access) throw new ConvexError("You do not have access to this file");
-
     const { user, file } = access;
 
     const favorite = await context.db
@@ -157,10 +191,13 @@ export const toggleFavorite = mutation({
   },
 });
 
-async function hasAccessToFile(
-  context: QueryContext | MutationContext,
-  fileId: Id<"files">,
-) {
+async function hasAccessToFile({
+  context,
+  fileId,
+}: {
+  context: QueryContext | MutationContext;
+  fileId: Id<"files">;
+}) {
   const identity = await context.auth.getUserIdentity();
   if (!identity) return;
 

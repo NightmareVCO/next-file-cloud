@@ -18,7 +18,13 @@ import React from "react";
 
 import FileDeleteModal from "../fileDeleteModal/FileDeleteModal";
 
-export default function FileCardActions({ file }: { file: Doc<"files"> }) {
+export default function FileCardActions({
+  file,
+  isFavorite,
+}: {
+  file: Doc<"files">;
+  isFavorite: boolean;
+}) {
   const iconClasses =
     "text-xl text-default-500 pointer-events-none flex-shrink-0";
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -48,9 +54,15 @@ export default function FileCardActions({ file }: { file: Doc<"files"> }) {
               color="primary"
               description="Add to favorites files"
               startContent={
-                <FavoriteDocumentIcon
-                  className={cn(iconClasses, "text-primary")}
-                />
+                isFavorite ? (
+                  <FavoriteDocumentIcon
+                    className={cn(iconClasses, "fill-primary stroke-primary")}
+                  />
+                ) : (
+                  <FavoriteDocumentIcon
+                    className={cn(iconClasses, "text-primary")}
+                  />
+                )
               }
               onPress={() => toogleFavorite({ fileId: file._id })}
             >

@@ -7,8 +7,15 @@ import FilesRenderer from "@/ui/components/filesRenderer/FilesRenderer";
 import Loading from "@/ui/components/loading/Loading";
 
 export default function AllFiles() {
-  const { orgId, createFile, files, isLoading, query, setQuery } =
-    useFilesManager({ favorites: false });
+  const {
+    orgId,
+    createFile,
+    files,
+    favoritesFiles,
+    isLoading,
+    query,
+    setQuery,
+  } = useFilesManager({ favorites: false });
 
   return (
     <>
@@ -32,7 +39,9 @@ export default function AllFiles() {
             <FileEmptyContainer title="No file matched your query" />
           )}
 
-          {files.length > 0 && <FilesRenderer files={files} />}
+          {files.length > 0 && (
+            <FilesRenderer files={files} favoriteFiles={favoritesFiles ?? []} />
+          )}
         </div>
       )}
     </>

@@ -29,8 +29,10 @@ const typesIcon = {
 
 export default function FileCard({
   file,
+  isFavorite,
 }: {
   file: Doc<"files"> & { url?: string | null };
+  isFavorite: boolean;
 }) {
   console.log(file);
 
@@ -40,7 +42,7 @@ export default function FileCard({
         <p>{typesIcon[file.type]}</p>
         <Spacer x={2} />
         <h2 className="w-full text-xl font-bold">{file.name}</h2>
-        <FileCardActions file={file} />
+        <FileCardActions file={file} isFavorite={isFavorite} />
       </CardHeader>
       <CardBody className="flex items-center justify-center">
         {file.type === "image" && (
