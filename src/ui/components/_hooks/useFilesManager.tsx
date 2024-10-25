@@ -3,7 +3,7 @@ import { api } from "@convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 
-export function useFilesManager({ favorites }: { favorites?: boolean }) {
+export function useFilesManager({ favorites, deletes }: { favorites?: boolean, deletes?: boolean }) {
   const organization = useOrganization();
   const user = useUser();
   const [query, setQuery] = useState<string>("");
@@ -21,7 +21,7 @@ export function useFilesManager({ favorites }: { favorites?: boolean }) {
   const createFile = useMutation(api.files.createFile);
   const files = useQuery(
     api.files.getFiles,
-    orgId ? { orgId, query, favorites } : "skip",
+    orgId ? { orgId, query, favorites, deletes } : "skip",
   );
   const isLoading = files === undefined;
 

@@ -2,6 +2,7 @@ import { ConvexError, v } from "convex/values";
 
 import { Id } from "./_generated/dataModel";
 import {
+  internalMutation,
   mutation,
   MutationCtx as MutationContext,
   query,
@@ -9,6 +10,7 @@ import {
 } from "./_generated/server";
 import { fileType } from "./schema";
 import { getUser } from "./users";
+import { internal } from "./_generated/api";
 
 export const hasAccessToOrg = async ({
   context,
@@ -71,6 +73,7 @@ export const getFiles = query({
     orgId: v.string(),
     query: v.optional(v.string()),
     favorites: v.optional(v.boolean()),
+    deletes: v.optional(v.boolean()),
   },
   async handler(context, arguments_) {
     const identity = await context.auth.getUserIdentity();
@@ -113,6 +116,13 @@ export const getFiles = query({
       );
     }
 
+    if (arguments_.deletes) {
+      // not suitable for large datasets
+      files = files.filter((file) => file.shouldDelete);
+    } else {
+      files = files.filter((file) => !file.shouldDelete);
+    }
+
     return await Promise.all(
       files.map(async (file) => ({
         ...file,
@@ -151,6 +161,22 @@ export const getAllFavorites = query({
   },
 });
 
+export const deleteAllFiles = internalMutation({
+  // probably not suitable for large datasets
+  args: {},
+  async handler(context, arguments_) {
+    const files = await context.db.query("files").withIndex("by_shouldDelete", (q) =>
+      q.eq("shouldDelete", true)).collect();
+
+    await Promise.all(
+      files.map(async (file) => {
+        await context.storage.delete(file.fileId);
+        return await context.db.delete(file._id)
+      }),
+    );
+  },
+});
+
 export const deleteFile = mutation({
   args: { fileId: v.id("files") },
   async handler(context, arguments_) {
@@ -163,7 +189,23 @@ export const deleteFile = mutation({
     const isAdmin = access.user.orgIds.find((org) => org.orgId === access.file.orgId)?.role === "admin";
     if (!isAdmin) throw new ConvexError("You must be an admin to delete a file");
 
-    await context.db.delete(arguments_.fileId);
+    await context.db.patch(arguments_.fileId, { shouldDelete: true });
+  },
+});
+
+export const restoreFile = mutation({
+  args: { fileId: v.id("files") },
+  async handler(context, arguments_) {
+    const access = await hasAccessToFile({
+      context,
+      fileId: arguments_.fileId,
+    });
+    if (!access) throw new ConvexError("You do not have access to this file");
+
+    const isAdmin = access.user.orgIds.find((org) => org.orgId === access.file.orgId)?.role === "admin";
+    if (!isAdmin) throw new ConvexError("You must be an admin to delete a file");
+
+    await context.db.patch(arguments_.fileId, { shouldDelete: false });
   },
 });
 

@@ -31,12 +31,11 @@ export default function FileDeleteModal(properties: FileDeleteModalProperties) {
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Are you sure you want to delete this file?
+                Are you sure you want to mark this file as deleted?
               </ModalHeader>
               <ModalBody>
                 <p>
-                  This action is irreversible and will permanently delete the
-                  file from the cloud.
+                  This action will move the file to the deleted files section. You can restore it or will be permanently deleted after 30 days.
                 </p>
               </ModalBody>
               <ModalFooter>
@@ -48,7 +47,7 @@ export default function FileDeleteModal(properties: FileDeleteModalProperties) {
                   variant="flat"
                   onPress={() => {
                     deleteFile({ fileId: file._id });
-                    toast.error("File deleted successfully", {
+                    toast.error("File moved to deletes files", {
                       description: new Date().toLocaleString(),
                     });
                     onClose();

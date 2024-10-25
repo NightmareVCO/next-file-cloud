@@ -1,4 +1,4 @@
-import { Protect, useUser } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import { api } from "@convex/_generated/api";
 import { Doc } from "@convex/_generated/dataModel";
 import { ActionsDotsIcon } from "@icons/ActionsDotsIcon";
@@ -18,6 +18,7 @@ import { useMutation } from "convex/react";
 import React from "react";
 
 import FileDeleteModal from "../fileDeleteModal/FileDeleteModal";
+import { UndoIcon } from "lucide-react";
 
 export default function FileCardActions({
   file,
@@ -32,6 +33,7 @@ export default function FileCardActions({
     "text-xl text-default-500 pointer-events-none flex-shrink-0";
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const toogleFavorite = useMutation(api.files.toggleFavorite);
+  const restoreFile = useMutation(api.files.restoreFile);
   const user = useUser();
   const isAdmin = user.user?.organizationMemberships.some(
     (membership) => membership.organization.id === orgId && membership.role === "org:admin"
@@ -77,35 +79,52 @@ export default function FileCardActions({
             </DropdownItem>
           </DropdownSection>
           <DropdownSection title="Danger Zone">
-            {isAdmin ? (
+          {file.shouldDelete ? (
             <DropdownItem
-              key="delete"
-              className="text-danger"
-              color="danger"
-              description="Permanently delete the file"
+              key="restore"
+              className="text-success"
+              color="success"
+              description="Restore the file"
               startContent={
-                <DeleteDocumentIcon
-                  className={cn(iconClasses, "text-danger")}
+                <UndoIcon
+                  className={cn(iconClasses, "text-success")}
                 />
               }
-              onPress={onOpen}
+              onPress={() => restoreFile({ fileId: file._id })}
             >
-              Delete file
+              Restore file
             </DropdownItem>
           ) : (
-            <DropdownItem
-              key="delete"
-              className="text-default-500"
-              color="default"
-              description="Not enough permissions to delete the file"
-              startContent={
-                <DeleteDocumentIcon
-                  className={cn(iconClasses, "text-default")}
-                />
-              }
-            >
-              Only admin can delete files
-            </DropdownItem>
+            isAdmin ? (
+              <DropdownItem
+                key="delete"
+                className="text-danger"
+                color="danger"
+                description="Permanently delete the file"
+                startContent={
+                  <DeleteDocumentIcon
+                    className={cn(iconClasses, "text-danger")}
+                  />
+                }
+                onPress={onOpen}
+              >
+                Delete file
+              </DropdownItem>
+            ) : (
+              <DropdownItem
+                key="delete"
+                className="text-default-500"
+                color="default"
+                description="Not enough permissions to delete the file"
+                startContent={
+                  <DeleteDocumentIcon
+                    className={cn(iconClasses, "text-default")}
+                  />
+                }
+              >
+                Only admin can delete files
+              </DropdownItem>
+            )
           )}
           </DropdownSection>
         </DropdownMenu>
