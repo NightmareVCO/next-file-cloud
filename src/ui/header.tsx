@@ -9,7 +9,7 @@ import {
 } from "@clerk/nextjs";
 import {
   Button,
-  Link,
+  // Link,
   Navbar,
   NavbarBrand,
   NavbarContent,
@@ -30,7 +30,7 @@ export default function Header() {
         </a>
       </NavbarBrand>
       <NavbarContent className="hidden gap-4 sm:flex" justify="center">
-        <NavbarItem>
+        {/* <NavbarItem>
           <Link
             className="transition-all duration-300 hover:text-primary-400 hover:scale-110"
             size="lg"
@@ -59,7 +59,7 @@ export default function Header() {
           >
             Integrations
           </Link>
-        </NavbarItem>
+        </NavbarItem> */}
       </NavbarContent>
       <NavbarContent justify="end">
         <NavbarItem className="hidden lg:flex">

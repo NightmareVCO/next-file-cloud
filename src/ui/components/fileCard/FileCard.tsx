@@ -32,8 +32,10 @@ export default function FileCard({
 }: {
   file: Doc<"files"> & { url?: string | null };
 }) {
+  console.log(file);
+
   return (
-    <Card className="p-2">
+    <Card className="p-2 min-w-[300px]">
       <CardHeader>
         <p>{typesIcon[file.type]}</p>
         <Spacer x={2} />
@@ -42,7 +44,7 @@ export default function FileCard({
       </CardHeader>
       <CardBody className="flex items-center justify-center">
         {file.type === "image" && (
-          <Image src={file.url!} width={200} height={200} alt={file.name} />
+          <Image src={file.url!} width={250} height={250} alt={file.name} />
         )}
         {/* {
           file.type === "pdf" && (

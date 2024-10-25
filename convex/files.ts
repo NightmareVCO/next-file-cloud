@@ -1,5 +1,6 @@
 import { ConvexError, v } from "convex/values";
 
+import { Id } from "./_generated/dataModel";
 import {
   mutation,
   MutationCtx as MutationContext,
@@ -66,7 +67,11 @@ export const generateUploadUrl = mutation(async (context) => {
 });
 
 export const getFiles = query({
-  args: { orgId: v.string() },
+  args: {
+    orgId: v.string(),
+    query: v.optional(v.string()),
+    favorites: v.optional(v.boolean()),
+  },
   async handler(context, arguments_) {
     const identity = await context.auth.getUserIdentity();
     if (!identity) return [];
@@ -78,12 +83,37 @@ export const getFiles = query({
     });
     if (!hasAccess) return [];
 
-    const files = await context.db
+    let files = await context.db
       .query("files")
       .withIndex("by_orgId", (q) => q.eq("orgId", arguments_.orgId))
       .collect();
 
-    return Promise.all(
+    if (arguments_.query) {
+      files = files.filter((file) =>
+        file.name.toLowerCase().includes(arguments_.query!.toLowerCase()),
+      );
+    }
+
+    if (arguments_.favorites) {
+      const user = await getUser({
+        context,
+        tokenIdentifier: identity.tokenIdentifier,
+      });
+
+      const favorites = await context.db
+        .query("favorites")
+        .withIndex("by_userId__orgId_fileId", (q) =>
+          q.eq("userId", user._id).eq("orgId", arguments_.orgId),
+        )
+        .collect();
+
+      // not suitable for large datasets
+      files = files.filter((file) =>
+        favorites.some((favorite) => favorite.fileId === file._id),
+      );
+    }
+
+    return await Promise.all(
       files.map(async (file) => ({
         ...file,
         url: await context.storage.getUrl(file.fileId),
@@ -95,21 +125,62 @@ export const getFiles = query({
 export const deleteFile = mutation({
   args: { fileId: v.id("files") },
   async handler(context, arguments_) {
-    const identity = await context.auth.getUserIdentity();
-    if (!identity)
-      throw new ConvexError("You must be signed in to delete a file");
-
-    const file = await context.db.get(arguments_.fileId);
-    if (!file) throw new ConvexError("File not found");
-
-    const hasAccess = await hasAccessToOrg({
-      context,
-      tokenIdentifier: identity.tokenIdentifier,
-      orgId: file.orgId,
-    });
-    if (!hasAccess)
-      throw new ConvexError("You do not have access to delete this file");
+    const access = await hasAccessToFile(context, arguments_.fileId);
+    if (!access) throw new ConvexError("You do not have access to this file");
 
     await context.db.delete(arguments_.fileId);
   },
 });
+
+export const toggleFavorite = mutation({
+  args: { fileId: v.id("files") },
+  async handler(context, arguments_) {
+    const access = await hasAccessToFile(context, arguments_.fileId);
+    if (!access) throw new ConvexError("You do not have access to this file");
+
+    const { user, file } = access;
+
+    const favorite = await context.db
+      .query("favorites")
+      .withIndex("by_userId__orgId_fileId", (q) =>
+        q.eq("userId", user._id).eq("orgId", file.orgId).eq("fileId", file._id),
+      )
+      .first();
+
+    await (favorite
+      ? context.db.delete(favorite._id)
+      : context.db.insert("favorites", {
+          userId: user._id,
+          fileId: file._id,
+          orgId: file.orgId,
+        }));
+  },
+});
+
+async function hasAccessToFile(
+  context: QueryContext | MutationContext,
+  fileId: Id<"files">,
+) {
+  const identity = await context.auth.getUserIdentity();
+  if (!identity) return;
+
+  const file = await context.db.get(fileId);
+  if (!file) return;
+
+  const hasAccess = await hasAccessToOrg({
+    context,
+    tokenIdentifier: identity.tokenIdentifier,
+    orgId: file.orgId,
+  });
+  if (!hasAccess) return;
+
+  const user = await context.db
+    .query("users")
+    .withIndex("by_tokenIdentifier", (q) =>
+      q.eq("tokenIdentifier", identity.tokenIdentifier),
+    )
+    .first();
+  if (!user) return;
+
+  return { user, file };
+}

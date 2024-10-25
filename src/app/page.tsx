@@ -1,91 +1,70 @@
-"use client";
+import { Button } from "@nextui-org/react";
+import Link from "next/link";
 
-import {
-  // ClerkLoaded,
-  ClerkLoading,
-  // OrganizationSwitcher,
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  // SignOutButton,
-  // UserButton,
-} from "@clerk/nextjs";
-import { useOrganization, useUser } from "@clerk/nextjs";
-import FileUploadModal from "@components/fileUploadModal/FileUploadModal";
-import { api } from "@convex/_generated/api";
-import { Button, Spinner } from "@nextui-org/react";
-import { useMutation, useQuery } from "convex/react";
-import Image from "next/image";
-
-import FileCard from "@/ui/components/fileCard/FileCard";
-
-export function useHome() {
-  const organization = useOrganization();
-  const user = useUser();
-
-  let orgId: string | undefined;
-  if (organization.isLoaded && user.isLoaded) {
-    orgId = organization.organization?.id ?? user.user?.id;
-  }
-
-  const createFile = useMutation(api.files.createFile);
-  const files = useQuery(api.files.getFiles, orgId ? { orgId } : "skip");
-
-  return { orgId, createFile, files };
-}
+import { RightIcon } from "@/ui/icons/RightIcon";
 
 export default function Home() {
-  const { orgId, createFile, files } = useHome();
-
   return (
-    <section className="container h-full mx-auto">
-      {/* {files === undefined && (
-        <div className="flex flex-col items-center w-full mt-24">
-          <Spinner size="lg" color="secondary" label="Loading..." />
-        </div>
-      )} */}
-
-      {files && files?.length > 0 && (
-        <div className="flex items-center justify-between mt-8">
-          <h1 className="text-4xl font-bold">Your Files</h1>
-          <FileUploadModal onSubmitFunction={createFile} orgId={orgId!} />
-        </div>
-      )}
-
-      {(files === undefined || files.length === 0) && (
-        <div className="flex flex-col items-center justify-center w-full gap-y-8">
-          <Image
-            className="mt-8"
-            src="empty.svg"
-            width={650}
-            height={650}
-            alt="Empty directory image illustration"
-          />
-          <p className="text-2xl font-medium text-primary-400">
-            {"You have no files, upload one now!"}
+    <>
+      <main className="flex flex-col items-center rounded-2xl px-3 md:rounded-3xl md:px-0">
+        <section className="z-20 my-14 flex flex-col items-center justify-center gap-[18px] sm:gap-6">
+          <Button
+            className="h-9 overflow-hidden border-1 border-default-100 bg-default-50 px-[18px] py-2 text-small font-normal leading-5 text-primary-400"
+            endContent={<RightIcon />}
+            radius="full"
+            variant="bordered"
+          >
+            New onboarding experience
+          </Button>
+          <div className="text-center text-[clamp(40px,10vw,44px)] font-bold leading-[1.2] tracking-tighter sm:text-[64px]">
+            <div className="bg-gradient-to-r from-primary via-primary to-primary-300 bg-clip-text text-transparent">
+              Easiest way to <br /> to add your files to cloud.
+            </div>
+          </div>
+          <p className="text-center font-normal leading-7 text-default-500 sm:w-[466px] sm:text-[18px]">
+            Acme makes running global teams simple. HR, Payroll, International
+            Employment, contractor management and more.
           </p>
-
-          <SignedIn>
-            <FileUploadModal onSubmitFunction={createFile} orgId={orgId!} />
-          </SignedIn>
-
-          <ClerkLoading>
-            <Spinner size="lg" color="secondary" />
-          </ClerkLoading>
-
-          <SignedOut>
-            <SignInButton>
-              <Button variant="shadow" color="secondary">
-                Sign In
-              </Button>
-            </SignInButton>
-          </SignedOut>
+          <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-6">
+            <Button
+              as={Link}
+              href="/dashboard/files"
+              color="primary"
+              variant="shadow"
+            >
+              Get Started
+            </Button>
+          </div>
+        </section>
+        <div className="z-20 mt-auto w-[calc(100%-calc(theme(spacing.4)*2))] max-w-6xl overflow-hidden rounded-tl-2xl rounded-tr-2xl border-1 border-b-0 border-[#FFFFFF1A] bg-background bg-opacity-0 p-4">
+          {/* <AppScreenshot /> */}
         </div>
-      )}
-
-      <section className="grid grid-cols-4 mt-8 gap-x-10">
-        {files?.map((file) => <FileCard key={file._id} file={file} />)}
-      </section>
-    </section>
+      </main>
+    </>
   );
 }
+
+// <Button
+//             endContent={
+//               <span className="pointer-events-none flex h-[22px] w-[22px] items-center justify-center rounded-full bg-default-100">
+//                 {/* <Icon
+//                   className="text-default-500 [&>path]:stroke-[1.5]"
+//                   icon="solar:arrow-right-linear"
+//                   width={16}
+//                 /> */}
+//               </span>
+//             }
+//             color="primary"
+//             variant="bordered"
+//           >
+//             See our plans
+//           </Button>
+
+// <div className="pointer-events-none inset-0 top-[-25%] z-10 scale-150 select-none sm:absolute sm:scale-125">
+//   {/* <FadeInImage
+//     fill
+//     priority
+//     alt="Gradient background"
+//     src="https://nextuipro.nyc3.cdn.digitaloceanspaces.com/components-images/backgrounds/bg-gradient.png"
+//   /> */}
+// </div>

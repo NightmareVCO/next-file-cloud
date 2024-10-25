@@ -38,8 +38,8 @@ export default function FileUploadModal(properties: FileUploadProperties) {
       <Toaster position="bottom-right" expand={true} closeButton richColors />
       <Button
         variant="flat"
-        color="secondary"
-        className="shadow-lg shadow-secondary/50"
+        color="primary"
+        className="shadow-lg shadow-primary/50"
         onPress={onOpen}
       >
         Upload File
@@ -64,8 +64,8 @@ export default function FileUploadModal(properties: FileUploadProperties) {
                   Close
                 </Button>
                 <Button
-                  className="shadow-lg shadow-secondary/50"
-                  color="secondary"
+                  className="shadow-lg shadow-primary/50"
+                  color="primary"
                   type="submit"
                   form="uploadForm"
                   variant="flat"
