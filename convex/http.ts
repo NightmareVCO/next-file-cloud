@@ -47,7 +47,7 @@ http.route({
           await context.runMutation(internal.users.addOrgIdToUser, {
             tokenIdentifier: `https://awake-moose-67.clerk.accounts.dev|${result.data.public_user_data.user_id}`,
             orgId: result.data.organization.id,
-            role: result.data.role === "org: admin" ? "admin" : "member",
+            role: result.data.role === "org:admin" ? "admin" : "member",
           });
           break;
         }
