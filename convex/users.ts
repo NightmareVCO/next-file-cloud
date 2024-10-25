@@ -5,6 +5,7 @@ import {
   MutationCtx as MutationContext,
   QueryCtx as QueryContext,
 } from "./_generated/server";
+import { roles } from "./schema";
 
 export const getUser = async ({
   context,
@@ -36,7 +37,7 @@ export const createUser = internalMutation({
 });
 
 export const addOrgIdToUser = internalMutation({
-  args: { tokenIdentifier: v.string(), orgId: v.string() },
+  args: { tokenIdentifier: v.string(), orgId: v.string(), role: roles },
   async handler(context, arguments_) {
     const user = await getUser({
       context,
@@ -45,7 +46,27 @@ export const addOrgIdToUser = internalMutation({
     if (!user) throw new ConvexError("User not found");
 
     await context.db.patch(user._id, {
-      orgIds: [...user.orgIds, arguments_.orgId],
+      orgIds: [...user.orgIds, { orgId: arguments_.orgId, role: arguments_.role }],
+    });
+  },
+});
+
+export const updateRoleInOrgForUser = internalMutation({
+  args: { tokenIdentifier: v.string(), orgId: v.string(), role: roles },
+  async handler(context, arguments_) {
+    const user = await getUser({
+      context,
+      tokenIdentifier: arguments_.tokenIdentifier,
+    });
+    if (!user) throw new ConvexError("User not found");
+
+    const org = user.orgIds.find((org) => org.orgId === arguments_.orgId);
+    if (!org) throw new ConvexError("User does not have access to this org");
+
+    org.role = arguments_.role;
+
+    await context.db.patch(user._id, {
+      orgIds: [...user.orgIds, { orgId: arguments_.orgId, role: arguments_.role }],
     });
   },
 });

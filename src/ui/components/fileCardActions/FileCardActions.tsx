@@ -1,3 +1,4 @@
+import { Protect, useUser } from "@clerk/nextjs";
 import { api } from "@convex/_generated/api";
 import { Doc } from "@convex/_generated/dataModel";
 import { ActionsDotsIcon } from "@icons/ActionsDotsIcon";
@@ -21,14 +22,20 @@ import FileDeleteModal from "../fileDeleteModal/FileDeleteModal";
 export default function FileCardActions({
   file,
   isFavorite,
+  orgId
 }: {
   file: Doc<"files">;
   isFavorite: boolean;
+  orgId: string;
 }) {
   const iconClasses =
     "text-xl text-default-500 pointer-events-none flex-shrink-0";
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const toogleFavorite = useMutation(api.files.toggleFavorite);
+  const user = useUser();
+  const isAdmin = user.user?.organizationMemberships.some(
+    (membership) => membership.organization.id === orgId && membership.role === "org:admin"
+  ) ?? false;
 
   return (
     <>
@@ -70,6 +77,7 @@ export default function FileCardActions({
             </DropdownItem>
           </DropdownSection>
           <DropdownSection title="Danger Zone">
+            {isAdmin ? (
             <DropdownItem
               key="delete"
               className="text-danger"
@@ -84,6 +92,21 @@ export default function FileCardActions({
             >
               Delete file
             </DropdownItem>
+          ) : (
+            <DropdownItem
+              key="delete"
+              className="text-default-500"
+              color="default"
+              description="Not enough permissions to delete the file"
+              startContent={
+                <DeleteDocumentIcon
+                  className={cn(iconClasses, "text-default")}
+                />
+              }
+            >
+              Only admin can delete files
+            </DropdownItem>
+          )}
           </DropdownSection>
         </DropdownMenu>
       </Dropdown>

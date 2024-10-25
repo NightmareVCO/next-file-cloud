@@ -1,8 +1,8 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
 const allFilesRoute = createRouteMatcher(["/dashboard/files"]);
-
 const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
+const isHomeRoute = createRouteMatcher(["/"]);
 
 export default clerkMiddleware((auth, request) => {
   // Restrict admin route to users with specific role
@@ -10,6 +10,14 @@ export default clerkMiddleware((auth, request) => {
 
   // Restrict dashboard routes to signed in users
   if (allFilesRoute(request)) auth().protect();
+
+  if (isHomeRoute(request)) {
+    const user = auth().userId
+    if (user) {
+      // Redirect authenticated users to the dashboard
+      return Response.redirect(new URL("/dashboard/files", request.url), 302);
+    }
+  }
 });
 
 export const config = {

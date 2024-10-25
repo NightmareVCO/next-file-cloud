@@ -40,7 +40,7 @@ export default function AllFiles() {
           )}
 
           {files.length > 0 && (
-            <FilesRenderer files={files} favoriteFiles={favoritesFiles ?? []} />
+            <FilesRenderer files={files} favoriteFiles={favoritesFiles ?? []} orgId={orgId!} />
           )}
         </div>
       )}
