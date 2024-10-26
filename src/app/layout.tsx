@@ -3,6 +3,8 @@ import "@styles/globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
+import Footer from "@/ui/footer";
+
 import Header from "../ui/header";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 
@@ -24,6 +26,7 @@ export default function RootLayout({
         <ConvexClientProvider>
           <Header />
           {children}
+          <Footer />
         </ConvexClientProvider>
       </body>
     </html>

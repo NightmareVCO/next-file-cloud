@@ -17,6 +17,7 @@ import {
   Spinner,
 } from "@nextui-org/react";
 import { AppLogo } from "@ui/icons/AppLogo";
+import Link from "next/link";
 
 import { AppIcon } from "@/ui/icons/AppIcon";
 
@@ -24,10 +25,13 @@ export default function Header() {
   return (
     <Navbar isBordered isBlurred maxWidth="xl">
       <NavbarBrand>
-        <a className="flex flex-row items-center justify-center gap-1" href="/">
+        <Link
+          className="flex flex-row items-center justify-center gap-1"
+          href="/"
+        >
           <AppIcon />
           <AppLogo />
-        </a>
+        </Link>
       </NavbarBrand>
       <NavbarContent className="hidden gap-4 sm:flex" justify="center">
         {/* <NavbarItem>
