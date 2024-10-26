@@ -1,9 +1,8 @@
 import { Button } from "@nextui-org/react";
+import Image from "next/image";
 import Link from "next/link";
 
 import { RightIcon } from "@/ui/icons/RightIcon";
-import Footer from "@/ui/footer";
-import Image from "next/image";
 
 export default function Home() {
   return (
@@ -39,7 +38,13 @@ export default function Home() {
           </div>
         </section>
         <section className="px-8 pb-8 max-w-7xl">
-          <Image src="/app-mockup.png" alt="Hero image" width={1920} height={1280} className="rounded-xl" />
+          <Image
+            src="/app-mockup.png"
+            alt="Hero image"
+            width={1920}
+            height={1280}
+            className="rounded-xl"
+          />
         </section>
       </main>
     </>
