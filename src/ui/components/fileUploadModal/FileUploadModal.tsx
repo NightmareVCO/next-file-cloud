@@ -1,5 +1,5 @@
 import FileUploadForm from "@components/fileUploadForm/FileUploadForm";
-import { Id } from "@convex/_generated/dataModel";
+import { Doc, Id } from "@convex/_generated/dataModel";
 import {
   Button,
   Modal,
@@ -24,7 +24,7 @@ export type FileUploadProperties = {
     name: string;
     orgId: string;
     fileId: Id<"_storage">;
-    type: "image" | "csv" | "pdf";
+    type: Doc<"files">["type"];
   }) => void;
 };
 
