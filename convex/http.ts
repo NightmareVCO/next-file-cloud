@@ -25,27 +25,27 @@ http.route({
       switch (result.type) {
         case "user.created": {
           await context.runMutation(internal.users.createUser, {
-            tokenIdentifier: `https://awake-moose-67.clerk.accounts.dev|${result.data.id}`,
-            // name: `${result.data.first_name ?? ""} ${
-            //   result.data.last_name ?? ""
-            // }`,
-            // image: result.data.image_url,
+            tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.id}`,
+            name: `${result.data.first_name ?? ""} ${
+              result.data.last_name ?? ""
+            }`,
+            image: result.data.image_url,
           });
           break;
         }
-        // case "user.updated": {
-        //   await context.runMutation(internal.users.updateUser, {
-        //     tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.id}`,
-        //     name: `${result.data.first_name ?? ""} ${
-        //       result.data.last_name ?? ""
-        //     }`,
-        //     image: result.data.image_url,
-        //   });
-        //   break;
-        // }
+        case "user.updated": {
+          await context.runMutation(internal.users.updateUser, {
+            tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.id}`,
+            name: `${result.data.first_name ?? ""} ${
+              result.data.last_name ?? ""
+            }`,
+            image: result.data.image_url,
+          });
+          break;
+        }
         case "organizationMembership.created": {
           await context.runMutation(internal.users.addOrgIdToUser, {
-            tokenIdentifier: `https://awake-moose-67.clerk.accounts.dev|${result.data.public_user_data.user_id}`,
+            tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.public_user_data.user_id}`,
             orgId: result.data.organization.id,
             role: result.data.role === "org:admin" ? "admin" : "member",
           });

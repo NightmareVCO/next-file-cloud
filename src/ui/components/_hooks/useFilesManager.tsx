@@ -3,7 +3,13 @@ import { api } from "@convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 
-export function useFilesManager({ favorites, deletes }: { favorites?: boolean, deletes?: boolean }) {
+export function useFilesManager({
+  favorites,
+  deletes,
+}: {
+  favorites?: boolean;
+  deletes?: boolean;
+}) {
   const organization = useOrganization();
   const user = useUser();
   const [query, setQuery] = useState<string>("");
@@ -23,7 +29,20 @@ export function useFilesManager({ favorites, deletes }: { favorites?: boolean, d
     api.files.getFiles,
     orgId ? { orgId, query, favorites, deletes } : "skip",
   );
-  const isLoading = files === undefined;
+
+  const userIds = files?.map((file) => file.userId) ?? [];
+
+  const allUsersFromFiles = useQuery(api.users.getProfiles, {
+      userIds,
+  } );
+
+  const allProfilesFromFiles = allUsersFromFiles?.map((user) => ({
+    id: user.id,
+    name: user.name ?? "Unknown",
+    image: user.image ?? "Unknown",
+  }));
+
+  const isLoading = files === undefined && allProfilesFromFiles === undefined;
 
   return {
     orgId,
@@ -32,6 +51,7 @@ export function useFilesManager({ favorites, deletes }: { favorites?: boolean, d
     createFile,
     files,
     query,
+    users: allProfilesFromFiles,
     setQuery,
   };
 }

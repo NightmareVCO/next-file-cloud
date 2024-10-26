@@ -21,7 +21,7 @@ export default function RootLayout({
         <SideNav />
       </section>
 
-      <section className="flex-4">{children}</section>
+      <section className="flex-5">{children}</section>
     </div>
   );
 }

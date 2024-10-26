@@ -1,7 +1,5 @@
 import React from "react";
-export const DeleteIcon = (
-  properties: React.SVGProps<SVGSVGElement>,
-) => (
+export const DeleteIcon = (properties: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     fill="none"

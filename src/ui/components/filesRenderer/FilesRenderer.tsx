@@ -15,9 +15,14 @@ export default function FilesRenderer({
     favoriteFiles.some((favoriteFile) => favoriteFile.fileId === file._id);
 
   return (
-    <section className="grid grid-cols-3 gap-x-10">
+    <section className="grid grid-cols-3 gap-10 pb-4">
       {files?.map((file) => (
-        <FileCard key={file._id} file={file} isFavorite={isFavorite(file)} orgId={orgId} />
+        <FileCard
+          key={file._id}
+          file={file}
+          isFavorite={isFavorite(file)}
+          orgId={orgId}
+        />
       ))}
     </section>
   );

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { useUser } from "@clerk/nextjs";
 import { api } from "@convex/_generated/api";
 import { Doc } from "@convex/_generated/dataModel";
@@ -15,17 +16,19 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { useMutation } from "convex/react";
+import { UndoIcon } from "lucide-react";
 import React from "react";
 
+import { DownloadDocumentIcon } from "@/ui/icons/DownloadDocumentIcon";
+
 import FileDeleteModal from "../fileDeleteModal/FileDeleteModal";
-import { UndoIcon } from "lucide-react";
 
 export default function FileCardActions({
   file,
   isFavorite,
-  orgId
+  orgId,
 }: {
-  file: Doc<"files">;
+  file: Doc<"files"> & { url?: string | null };
   isFavorite: boolean;
   orgId: string;
 }) {
@@ -35,9 +38,11 @@ export default function FileCardActions({
   const toogleFavorite = useMutation(api.files.toggleFavorite);
   const restoreFile = useMutation(api.files.restoreFile);
   const user = useUser();
-  const isAdmin = user.user?.organizationMemberships.some(
-    (membership) => membership.organization.id === orgId && membership.role === "org:admin"
-  ) ?? false;
+  const isAdmin =
+    user.user?.organizationMemberships.some(
+      (membership) =>
+        membership.organization.id === orgId && membership.role === "org:admin",
+    ) ?? false;
 
   return (
     <>
@@ -61,6 +66,22 @@ export default function FileCardActions({
               key="favorite"
               className="text-primary"
               color="primary"
+              description="Download the file"
+              startContent={
+                <DownloadDocumentIcon
+                  className={cn(iconClasses, "text-primary")}
+                />
+              }
+              onPress={() => {
+                window.open(file.url!, "_blank");
+              }}
+            >
+              Download
+            </DropdownItem>
+            <DropdownItem
+              key="favorite"
+              className="text-primary"
+              color="primary"
               description="Add to favorites files"
               startContent={
                 isFavorite ? (
@@ -75,27 +96,24 @@ export default function FileCardActions({
               }
               onPress={() => toogleFavorite({ fileId: file._id })}
             >
-              Favorite
+              {isFavorite ? "Unfavorite" : "Favorite"}
             </DropdownItem>
           </DropdownSection>
           <DropdownSection title="Danger Zone">
-          {file.shouldDelete ? (
-            <DropdownItem
-              key="restore"
-              className="text-success"
-              color="success"
-              description="Restore the file"
-              startContent={
-                <UndoIcon
-                  className={cn(iconClasses, "text-success")}
-                />
-              }
-              onPress={() => restoreFile({ fileId: file._id })}
-            >
-              Restore file
-            </DropdownItem>
-          ) : (
-            isAdmin ? (
+            {file.shouldDelete ? (
+              <DropdownItem
+                key="restore"
+                className="text-success"
+                color="success"
+                description="Restore the file"
+                startContent={
+                  <UndoIcon className={cn(iconClasses, "text-success")} />
+                }
+                onPress={() => restoreFile({ fileId: file._id })}
+              >
+                Restore file
+              </DropdownItem>
+            ) : (isAdmin ? (
               <DropdownItem
                 key="delete"
                 className="text-danger"
@@ -124,8 +142,7 @@ export default function FileCardActions({
               >
                 Only admin can delete files
               </DropdownItem>
-            )
-          )}
+            ))}
           </DropdownSection>
         </DropdownMenu>
       </Dropdown>

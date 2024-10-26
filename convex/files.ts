@@ -10,7 +10,6 @@ import {
 } from "./_generated/server";
 import { fileType } from "./schema";
 import { getUser } from "./users";
-import { internal } from "./_generated/api";
 
 export const hasAccessToOrg = async ({
   context,
@@ -27,7 +26,8 @@ export const hasAccessToOrg = async ({
   });
 
   const hasAccess =
-    user.orgIds.some((org) => org.orgId === orgId) || user.tokenIdentifier.includes(orgId);
+    user.orgIds.some((org) => org.orgId === orgId) ||
+    user.tokenIdentifier.includes(orgId);
 
   return hasAccess;
 };
@@ -51,11 +51,17 @@ export const createFile = mutation({
     });
     if (!hasAccess) throw new ConvexError("You do not have access to this org");
 
+    const user = await getUser({
+      context,
+      tokenIdentifier: identity.tokenIdentifier,
+    });
+
     await context.db.insert("files", {
       name: arguments_.name,
       orgId: arguments_.orgId,
       fileId: arguments_.fileId,
       type: arguments_.type,
+      userId: user._id,
     });
   },
 });
@@ -116,12 +122,10 @@ export const getFiles = query({
       );
     }
 
-    if (arguments_.deletes) {
-      // not suitable for large datasets
-      files = files.filter((file) => file.shouldDelete);
-    } else {
-      files = files.filter((file) => !file.shouldDelete);
-    }
+    // not suitable for large datasets
+    files = files.filter((file) =>
+      arguments_.deletes ? file.shouldDelete : !file.shouldDelete,
+    );
 
     return await Promise.all(
       files.map(async (file) => ({
@@ -164,14 +168,16 @@ export const getAllFavorites = query({
 export const deleteAllFiles = internalMutation({
   // probably not suitable for large datasets
   args: {},
-  async handler(context, arguments_) {
-    const files = await context.db.query("files").withIndex("by_shouldDelete", (q) =>
-      q.eq("shouldDelete", true)).collect();
+  async handler(context) {
+    const files = await context.db
+      .query("files")
+      .withIndex("by_shouldDelete", (q) => q.eq("shouldDelete", true))
+      .collect();
 
     await Promise.all(
       files.map(async (file) => {
         await context.storage.delete(file.fileId);
-        return await context.db.delete(file._id)
+        return await context.db.delete(file._id);
       }),
     );
   },
@@ -186,8 +192,11 @@ export const deleteFile = mutation({
     });
     if (!access) throw new ConvexError("You do not have access to this file");
 
-    const isAdmin = access.user.orgIds.find((org) => org.orgId === access.file.orgId)?.role === "admin";
-    if (!isAdmin) throw new ConvexError("You must be an admin to delete a file");
+    const isAdmin =
+      access.user.orgIds.find((org) => org.orgId === access.file.orgId)
+        ?.role === "admin";
+    if (!isAdmin)
+      throw new ConvexError("You must be an admin to delete a file");
 
     await context.db.patch(arguments_.fileId, { shouldDelete: true });
   },
@@ -202,8 +211,11 @@ export const restoreFile = mutation({
     });
     if (!access) throw new ConvexError("You do not have access to this file");
 
-    const isAdmin = access.user.orgIds.find((org) => org.orgId === access.file.orgId)?.role === "admin";
-    if (!isAdmin) throw new ConvexError("You must be an admin to delete a file");
+    const isAdmin =
+      access.user.orgIds.find((org) => org.orgId === access.file.orgId)
+        ?.role === "admin";
+    if (!isAdmin)
+      throw new ConvexError("You must be an admin to restore this a file");
 
     await context.db.patch(arguments_.fileId, { shouldDelete: false });
   },

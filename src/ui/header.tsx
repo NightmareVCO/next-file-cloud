@@ -22,7 +22,7 @@ import { AppIcon } from "@/ui/icons/AppIcon";
 
 export default function Header() {
   return (
-    <Navbar isBordered isBlurred>
+    <Navbar isBordered isBlurred maxWidth="xl">
       <NavbarBrand>
         <a className="flex flex-row items-center justify-center gap-1" href="/">
           <AppIcon />

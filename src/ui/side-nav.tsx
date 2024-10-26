@@ -3,9 +3,9 @@
 import { Button, Link } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
 
+import { DeleteIcon } from "./icons/DeleteIcon";
 import { FileIcon } from "./icons/FileIcon";
 import { StartIcon } from "./icons/StartIcon";
-import { DeleteIcon } from "./icons/DeleteIcon";
 
 export function useSideNav() {
   const pathname = usePathname();
@@ -63,7 +63,7 @@ export default function SideNav() {
           href="/dashboard/deletes"
           variant="light"
           color="primary"
-          startContent={<DeleteIcon/>}
+          startContent={<DeleteIcon />}
         >
           Deletes
         </Button>

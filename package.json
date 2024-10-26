@@ -19,6 +19,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "convex": "^1.17.0",
+    "date-fns": "^4.1.0",
     "framer-motion": "^11.11.9",
     "install": "^0.13.0",
     "lucide-react": "^0.453.0",

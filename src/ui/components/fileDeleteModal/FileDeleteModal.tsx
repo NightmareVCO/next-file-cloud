@@ -35,7 +35,9 @@ export default function FileDeleteModal(properties: FileDeleteModalProperties) {
               </ModalHeader>
               <ModalBody>
                 <p>
-                  This action will move the file to the deleted files section. You can restore it or will be permanently deleted after 30 days.
+                  This action will move the file to the deleted files section.
+                  You can restore it or will be permanently deleted after 30
+                  days.
                 </p>
               </ModalBody>
               <ModalFooter>
