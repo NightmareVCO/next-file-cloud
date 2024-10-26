@@ -1,4 +1,4 @@
-import { Id } from "@convex/_generated/dataModel";
+import { Doc, Id } from "@convex/_generated/dataModel";
 import { ReactMutation } from "convex/react";
 import { FunctionReference } from "convex/server";
 import { Dispatch, SetStateAction } from "react";
@@ -14,7 +14,7 @@ export type FileBrowserProperties = {
       {
         orgId: string;
         name: string;
-        type: "image" | "csv" | "pdf";
+        type: Doc<"files">["type"];
         fileId: Id<"_storage">;
       },
       null,

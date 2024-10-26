@@ -1,5 +1,6 @@
 import { useOrganization, useUser } from "@clerk/nextjs";
 import { api } from "@convex/_generated/api";
+import { Doc } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 
@@ -13,6 +14,7 @@ export function useFilesManager({
   const organization = useOrganization();
   const user = useUser();
   const [query, setQuery] = useState<string>("");
+  const [type, setType] = useState<Doc<"files">["type"] & "all">("all");
 
   let orgId: string | undefined;
   if (organization.isLoaded && user.isLoaded) {
@@ -27,14 +29,22 @@ export function useFilesManager({
   const createFile = useMutation(api.files.createFile);
   const files = useQuery(
     api.files.getFiles,
-    orgId ? { orgId, query, favorites, deletes } : "skip",
+    orgId
+      ? {
+          orgId,
+          query,
+          favorites,
+          deletes,
+          type: type === "all" ? undefined : type,
+        }
+      : "skip",
   );
 
   const userIds = files?.map((file) => file.userId) ?? [];
 
   const allUsersFromFiles = useQuery(api.users.getProfiles, {
-      userIds,
-  } );
+    userIds,
+  });
 
   const allProfilesFromFiles = allUsersFromFiles?.map((user) => ({
     id: user.id,
@@ -53,5 +63,7 @@ export function useFilesManager({
     query,
     users: allProfilesFromFiles,
     setQuery,
+    type,
+    setType,
   };
 }

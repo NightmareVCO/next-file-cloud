@@ -128,3 +128,18 @@ export const updateRoleInOrgForUser = internalMutation({
     });
   },
 });
+
+export const getMe = query({
+  async handler(context) {
+    const identity = await context.auth.getUserIdentity();
+    if (!identity) throw new ConvexError("You must be signed in");
+
+    const user = await getUser({
+      context,
+      tokenIdentifier: identity.tokenIdentifier,
+    });
+    if (!user) throw new ConvexError("User not found");
+
+    return user;
+  },
+});

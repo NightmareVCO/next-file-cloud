@@ -15,7 +15,7 @@ import {
   DropdownTrigger,
   useDisclosure,
 } from "@nextui-org/react";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { UndoIcon } from "lucide-react";
 import React from "react";
 
@@ -37,12 +37,17 @@ export default function FileCardActions({
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const toogleFavorite = useMutation(api.files.toggleFavorite);
   const restoreFile = useMutation(api.files.restoreFile);
+  const me = useQuery(api.users.getMe);
   const user = useUser();
   const isAdmin =
     user.user?.organizationMemberships.some(
       (membership) =>
         membership.organization.id === orgId && membership.role === "org:admin",
-    ) ?? false;
+    ) || file.userId === me?._id ;
+
+  console.log("isAdmin", isAdmin);
+  console.log("file.userId", file.userId);
+  console.log("user.user?.id", user.user?.id);
 
   return (
     <>
@@ -63,7 +68,7 @@ export default function FileCardActions({
         >
           <DropdownSection title="Actions Zone" showDivider>
             <DropdownItem
-              key="favorite"
+              key="download"
               className="text-primary"
               color="primary"
               description="Download the file"

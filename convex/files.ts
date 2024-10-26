@@ -1,6 +1,6 @@
 import { ConvexError, v } from "convex/values";
 
-import { Id } from "./_generated/dataModel";
+import { Doc as Document_, Id } from "./_generated/dataModel";
 import {
   internalMutation,
   mutation,
@@ -80,6 +80,7 @@ export const getFiles = query({
     query: v.optional(v.string()),
     favorites: v.optional(v.boolean()),
     deletes: v.optional(v.boolean()),
+    type: v.optional(fileType),
   },
   async handler(context, arguments_) {
     const identity = await context.auth.getUserIdentity();
@@ -120,6 +121,10 @@ export const getFiles = query({
       files = files.filter((file) =>
         favorites.some((favorite) => favorite.fileId === file._id),
       );
+    }
+
+    if (arguments_.type) {
+      files = files.filter((file) => file.type === arguments_.type);
     }
 
     // not suitable for large datasets
@@ -183,6 +188,20 @@ export const deleteAllFiles = internalMutation({
   },
 });
 
+const assertCanDeleteFile = async ({
+  user,
+  file,
+}: {
+  user: Document_<"users">;
+  file: Document_<"files">;
+}) => {
+  const canDelete =
+    file.userId === user._id ||
+    user.orgIds.find((org) => org.orgId === file.orgId)?.role === "admin";
+  if (!canDelete)
+    throw new ConvexError("You must be an admin to delete a file");
+};
+
 export const deleteFile = mutation({
   args: { fileId: v.id("files") },
   async handler(context, arguments_) {
@@ -192,11 +211,7 @@ export const deleteFile = mutation({
     });
     if (!access) throw new ConvexError("You do not have access to this file");
 
-    const isAdmin =
-      access.user.orgIds.find((org) => org.orgId === access.file.orgId)
-        ?.role === "admin";
-    if (!isAdmin)
-      throw new ConvexError("You must be an admin to delete a file");
+    assertCanDeleteFile({ user: access.user, file: access.file });
 
     await context.db.patch(arguments_.fileId, { shouldDelete: true });
   },
@@ -211,11 +226,7 @@ export const restoreFile = mutation({
     });
     if (!access) throw new ConvexError("You do not have access to this file");
 
-    const isAdmin =
-      access.user.orgIds.find((org) => org.orgId === access.file.orgId)
-        ?.role === "admin";
-    if (!isAdmin)
-      throw new ConvexError("You must be an admin to restore this a file");
+    assertCanDeleteFile({ user: access.user, file: access.file });
 
     await context.db.patch(arguments_.fileId, { shouldDelete: false });
   },

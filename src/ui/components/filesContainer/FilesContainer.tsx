@@ -1,15 +1,12 @@
 "use client";
 
-import { Tab, Tabs } from "@nextui-org/react";
-import { GridIcon, TableIcon } from "lucide-react";
-
 import { useFilesManager } from "@/ui/components/_hooks/useFilesManager";
 import FileEmptyContainer from "@/ui/components/fileEmpty/FileEmptyContainer";
 import FilesBrowser from "@/ui/components/filesBrowser/FilesBrowser";
-import FilesRenderer from "@/ui/components/filesRenderer/FilesRenderer";
 import Loading from "@/ui/components/loading/Loading";
 
-import FilesTable from "../FileTable/FileTable";
+import FilesTabs from "../filesTabs/FilesTabs";
+import FileTypeSelector from "../fileTypeSelector/FileTypeSelector";
 
 export default function FilesContainer({
   favorites,
@@ -27,6 +24,8 @@ export default function FilesContainer({
     users,
     query,
     setQuery,
+    type,
+    setType,
   } = useFilesManager({ favorites: favorites, deletes: deletes });
 
   return (
@@ -47,43 +46,19 @@ export default function FilesContainer({
             orgId={orgId!}
           />
 
+          <FileTypeSelector type={type} setType={setType} />
+
           {files.length === 0 && (
             <FileEmptyContainer title="No file matched your query" />
           )}
 
           {files.length > 0 && (
-            <Tabs>
-              <Tab
-                key="grid"
-                title={
-                  <div className="flex flex-row gap-x-2 items-center justify-center">
-                    <GridIcon size={24} />
-                    <p>Grid</p>
-                  </div>
-                }
-              >
-                <FilesRenderer
-                  files={files}
-                  favoriteFiles={favoritesFiles ?? []}
-                  orgId={orgId!}
-                />
-              </Tab>
-              <Tab
-                key="table"
-                title={
-                  <div className="flex flex-row gap-x-2 items-center justify-center">
-                    <TableIcon size={24} />
-                    <p>Table</p>
-                  </div>
-                }
-              >
-                <FilesTable
-                  files={files}
-                  users={users ?? []}
-                  favoritesFiles={favoritesFiles ?? []}
-                />
-              </Tab>
-            </Tabs>
+            <FilesTabs
+              files={files}
+              favoritesFiles={favoritesFiles ?? []}
+              orgId={orgId!}
+              users={users ?? []}
+            />
           )}
         </div>
       )}

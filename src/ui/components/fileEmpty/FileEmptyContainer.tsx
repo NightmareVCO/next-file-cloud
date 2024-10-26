@@ -16,8 +16,8 @@ export default function FileEmptyContainer({ title }: { title: string }) {
         className="mt-8"
         src="/empty.svg"
         alt="Empty directory image illustration"
-        width={550}
-        height={550}
+        width={450}
+        height={450}
         priority
       />
       <p className="text-2xl font-medium text-primary-400">{title}</p>
