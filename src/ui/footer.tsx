@@ -8,11 +8,11 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="flex w-full flex-col">
+    <footer className="flex flex-col w-full overflow-x-hidden">
       <Divider orientation="horizontal" />
-      <div className="mx-auto w-full max-w-7xl px-6 py-12 md:flex md:items-center md:justify-between lg:px-8">
+      <div className="w-full py-5 mx-auto max-w-7xl md:flex md:items-center md:justify-between">
         <div className="mt-4 md:order-1 md:mt-0">
-          <div className="flex items-center justify-center gap-3 md:justify-start">
+          <div className="flex flex-col items-center justify-center gap-3 md:flex-row md:justify-start">
             <div className="flex items-center">
               <Link
                 className="flex flex-row items-center justify-center gap-1"
@@ -22,16 +22,16 @@ export default function Footer() {
                 <AppLogo />
               </Link>
             </div>
-            <Divider className="h-4" orientation="vertical" />
+            <Divider className="hidden h-4 md:block" orientation="vertical" />
             <Chip
-              className="border-none px-0 text-default-500"
+              className="px-0 border-none text-default-500"
               color="success"
               variant="dot"
             >
               All systems operational
             </Chip>
           </div>
-          <p className="text-center text-tiny text-default-400 md:text-start hover:scale-105 hover:text-primary transition duration-300">
+          <p className="text-center transition duration-300 text-tiny text-default-400 md:text-start hover:scale-105 hover:text-primary">
             &copy; {year}{" "}
             <Link
               rel="noopener"

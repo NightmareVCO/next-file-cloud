@@ -14,7 +14,7 @@ import {
 } from "@nextui-org/react";
 import { useQuery } from "convex/react";
 import { formatRelative } from "date-fns";
-import { FileTextIcon, GanttChartIcon, ImageIcon } from "lucide-react";
+import { FileIcon, FileTextIcon, GanttChartIcon, ImageIcon, PaperclipIcon, TextIcon } from "lucide-react";
 import Image from "next/image";
 // import { pdf } from "pdf-to-img";
 import React, { ReactNode } from "react";
@@ -56,10 +56,12 @@ export default function FileCard({
         {file.type === "image" && (
           <Image src={file.url!} width={250} height={250} alt={file.name} />
         )}
-        {/* {
-          file.type === "pdf" && (
-            {pdf()}
-        } */}
+        {file.type === "pdf" && (
+          <FileTextIcon strokeWidth={0.70} size={200} />
+        )}
+        {file.type === "csv" && (
+          <TextIcon strokeWidth={0.70} size={200} />
+        )}
       </CardBody>
       <CardFooter className="flex flex-col items-center justify-between gap-y-4">
         {/* <Button

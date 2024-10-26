@@ -7,6 +7,7 @@ import Footer from "@/ui/footer";
 
 import Header from "../ui/header";
 import { ConvexClientProvider } from "./ConvexClientProvider";
+import BackGround from "@/ui/background";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,14 +22,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <ConvexClientProvider>
-          <Header />
-          {children}
-          <Footer />
-        </ConvexClientProvider>
-      </body>
+    <html lang="en, es">
+      <body className={inter.className + ' overflow-x-hidden'}>
+         <BackGround>
+            <ConvexClientProvider>
+              <Header />
+              {children}
+              <Footer />
+           </ConvexClientProvider>
+          </BackGround>
+        </body>
     </html>
   );
 }
