@@ -29,7 +29,7 @@ export default function FilesContainer({
   } = useFilesManager({ favorites: favorites, deletes: deletes });
 
   return (
-    <>
+    <div className="p-4 lg:p-4">
       {isLoading && <Loading />}
 
       {!isLoading && !files && (
@@ -62,6 +62,6 @@ export default function FilesContainer({
           )}
         </div>
       )}
-    </>
+    </div>
   );
 }

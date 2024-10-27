@@ -15,8 +15,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="container flex flex-row mx-auto mt-8">
-      <section className="flex flex-col flex-1 min-h-[calc(100vh_-_125px)] mr-10 border-r gap-y-8">
+    <div className="container flex flex-col mx-auto mt-8 lg:flex-row">
+      <section className="flex flex-col flex-1  lg:min-h-[calc(100vh_-_125px)] mb-10 lg:mb-0 lg:mr-10 lg:border-r gap-y-8 items-center lg:items-normal">
         <h2 className="text-4xl font-bold">Categories</h2>
         <SideNav />
       </section>

@@ -11,7 +11,7 @@ export default function FilesBrowser({
   orgId,
 }: FileBrowserProperties) {
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex flex-col items-center justify-between gap-y-4 lg:flex-row">
       <h1 className="text-4xl font-bold">{title}</h1>
       <SearchBar query={query} setQuery={setQuery} />
       <FileUploadModal onSubmitFunction={createFile} orgId={orgId!} />

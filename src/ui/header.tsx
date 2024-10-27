@@ -30,7 +30,7 @@ export default function Header() {
           href="/"
         >
           <AppIcon />
-          <AppLogo />
+          <AppLogo className="hidden lg:block" />
         </Link>
       </NavbarBrand>
       <NavbarContent className="hidden gap-4 sm:flex" justify="center">

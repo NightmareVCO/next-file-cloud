@@ -31,7 +31,7 @@ export default function SideNav() {
   const { filesColor, favoritesColor, deletesColor } = useSideNav();
 
   return (
-    <ul className="flex flex-col gap-y-2">
+    <ul className="flex flex-row lg:flex-col gap-y-2">
       <li>
         <Button
           as={Link}

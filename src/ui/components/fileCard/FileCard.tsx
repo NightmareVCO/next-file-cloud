@@ -45,7 +45,7 @@ export default function FileCard({
   });
 
   return (
-    <Card className="p-2 min-w-[200px]">
+    <Card className="p-2 min-w-[200px] col-span-3 lg:col-span-1">
       <CardHeader>
         <p>{typesIcon[file.type]}</p>
         <Spacer x={2} />

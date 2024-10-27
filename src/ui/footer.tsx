@@ -19,7 +19,7 @@ export default function Footer() {
                 href="/"
               >
                 <AppIcon />
-                <AppLogo />
+                <AppLogo className="hidden lg:block" />
               </Link>
             </div>
             <Divider className="hidden h-4 md:block" orientation="vertical" />
