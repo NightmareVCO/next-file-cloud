@@ -44,7 +44,13 @@ export default function FileUploadModal(properties: FileUploadProperties) {
       >
         Upload File
       </Button>
-      <Modal size="2xl" isOpen={isOpen} onClose={onClose}>
+      <Modal
+        size="2xl"
+        isOpen={isOpen}
+        isDismissable={false}
+        hideCloseButton
+        onClose={onClose}
+      >
         <ModalContent>
           {(onClose) => (
             <>
@@ -60,7 +66,12 @@ export default function FileUploadModal(properties: FileUploadProperties) {
                 />
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
+                <Button
+                  color="danger"
+                  variant="light"
+                  isDisabled={submitButtonDisable}
+                  onPress={onClose}
+                >
                   Close
                 </Button>
                 <Button
