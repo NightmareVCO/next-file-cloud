@@ -4,6 +4,9 @@ const nextConfig = {
     remotePatterns: [
       {
         hostname: "rapid-sardine-332.convex.cloud"
+      },
+      {
+        hostname: "charming-ocelot-993.convex.cloud"
       }
     ],
   }
