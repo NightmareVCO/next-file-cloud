@@ -11,9 +11,8 @@ export default function FileEmptyContainer({ title }: { title: string }) {
   const { createFile, orgId } = useFilesManager({});
 
   return (
-    <div className="flex flex-col items-center justify-center w-full gap-y-8">
+    <div className="flex flex-col items-center justify-center w-full gap-y-8 py-8">
       <Image
-        className="mt-8"
         src="/empty.svg"
         alt="Empty directory image illustration"
         width={450}

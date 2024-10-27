@@ -1,4 +1,5 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
 const allFilesRoute = createRouteMatcher(["/dashboard/files"]);
 const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
@@ -15,7 +16,7 @@ export default clerkMiddleware((auth, request) => {
     const user = auth().userId;
     if (user) {
       // Redirect authenticated users to the dashboard
-      return Response.redirect(new URL("/dashboard/files", request.url), 302);
+      return NextResponse.redirect(new URL("/dashboard/files", request.url));
     }
   }
 });
