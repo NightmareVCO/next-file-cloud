@@ -1,7 +1,8 @@
+// eslint-disable-next-line import/no-anonymous-default-export
 export default {
   providers: [
     {
-      domain: "https://awake-moose-67.clerk.accounts.dev",
+      domain: `https://${process.env.CLERK_HOSTNAME}`,
       applicationID: "convex",
     },
   ],
