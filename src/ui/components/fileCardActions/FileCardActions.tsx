@@ -71,7 +71,7 @@ export default function FileCardActions({
               key="download"
               className="text-primary"
               color="primary"
-              description="Download the file"
+              description="Open the file"
               startContent={
                 <DownloadDocumentIcon
                   className={cn(iconClasses, "text-primary")}
@@ -81,7 +81,7 @@ export default function FileCardActions({
                 window.open(file.url!, "_blank");
               }}
             >
-              Download
+              Open
             </DropdownItem>
             <DropdownItem
               key="favorite"
