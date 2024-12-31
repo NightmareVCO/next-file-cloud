@@ -15,17 +15,14 @@ export const getUser = async ({
   context: QueryContext | MutationContext;
   tokenIdentifier: string;
 }) => {
-  try {
-    const user = await context.db
-      .query("users")
-      .withIndex("by_tokenIdentifier", (q) =>
-        q.eq("tokenIdentifier", tokenIdentifier),
-      )
-      .first();
-    if (!user) throw new ConvexError("User not found");
+  const user = await context.db
+    .query("users")
+    .withIndex("by_tokenIdentifier", (q) =>
+      q.eq("tokenIdentifier", tokenIdentifier),
+    )
+    .first();
 
-    return user;
-  } catch {}
+  return user;
 };
 
 export const getProfile = query({

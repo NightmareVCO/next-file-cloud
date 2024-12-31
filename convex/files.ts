@@ -25,6 +25,8 @@ export const hasAccessToOrg = async ({
     tokenIdentifier,
   });
 
+  if (!user) return false;
+
   const hasAccess =
     user.orgIds.some((org) => org.orgId === orgId) ||
     user.tokenIdentifier.includes(orgId);
@@ -55,6 +57,9 @@ export const createFile = mutation({
       context,
       tokenIdentifier: identity.tokenIdentifier,
     });
+
+    if (!user)
+      throw new ConvexError("You must be signed in to upload a file to an org");
 
     await context.db.insert("files", {
       name: arguments_.name,
@@ -110,6 +115,8 @@ export const getFiles = query({
         tokenIdentifier: identity.tokenIdentifier,
       });
 
+      if (!user) return [];
+
       const favorites = await context.db
         .query("favorites")
         .withIndex("by_userId__orgId_fileId", (q) =>
@@ -151,6 +158,8 @@ export const getAllFavorites = query({
       context,
       tokenIdentifier: identity.tokenIdentifier,
     });
+
+    if (!user) return [];
 
     const access = await hasAccessToOrg({
       context,
