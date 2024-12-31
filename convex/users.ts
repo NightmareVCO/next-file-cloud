@@ -80,6 +80,8 @@ export const updateUser = internalMutation({
       tokenIdentifier: arguments_.tokenIdentifier,
     });
 
+    if (!user) throw new ConvexError("User not found");
+
     await context.db.patch(user._id, {
       name: arguments_.name,
       image: arguments_.image,
